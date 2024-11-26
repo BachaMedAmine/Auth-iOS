@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>test.test.TestingLogin</string>
+
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>GoogleSignIn</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.776445557487-5tksh9ubcogce99o33ut4ohok8slkt4c</string>
+            </array>
+        </dict>
+    </array>
+
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>127.0.0.1</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
+
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to upload and display car images.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need to save images to your photo library.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera to take photos of your car.</string>
+</dict>
+</plist>
