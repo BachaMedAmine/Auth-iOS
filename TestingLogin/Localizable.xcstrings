@@ -54,6 +54,12 @@
     "Are you sure you want to log out?" : {
 
     },
+    "Car Details" : {
+
+    },
+    "Car Image" : {
+
+    },
     "Car Maintenance" : {
 
     },
@@ -275,6 +281,15 @@
         }
       }
     },
+    "Make" : {
+
+    },
+    "Mileage" : {
+
+    },
+    "Model" : {
+
+    },
     "My Profile" : {
       "localizations" : {
         "fr" : {
@@ -412,7 +427,6 @@
       }
     },
     "Select from Photos" : {
-      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -499,6 +513,9 @@
         }
       }
     },
+    "Take a Photo" : {
+
+    },
     "terms and conditions" : {
       "localizations" : {
         "fr" : {
@@ -518,6 +535,12 @@
           }
         }
       }
+    },
+    "Update Car" : {
+
+    },
+    "Update Car Details" : {
+
     },
     "Update Status" : {
 
@@ -576,6 +599,9 @@
           }
         }
       }
+    },
+    "Year" : {
+
     }
   },
   "version" : "1.0"

@@ -14,6 +14,10 @@ struct HomePage: View {
     @State private var selectedTab: TabBarItems = .home // Selected tab
     @State private var navigateToPhotosView = false // State for PhotosView navigation
     @State private var navigateToProfileView = false // State for EditProfile navigation
+    @State private var selectedCar: Car? // Holds the selected car for navigation
+    @State private var navigateToDetailView = false // State for CarDetailView navigation
+    @State private var navigateToUpdateView = false // State for CarUpdateView navigation
+
 
     var body: some View {
         NavigationView {
@@ -33,11 +37,6 @@ struct HomePage: View {
                                         Image(systemName: "plus.circle")
                                             .font(.system(size: 40))
                                             .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
-                                            .onTapGesture {
-                                                logNavigation(from: "HomePage", to: "PhotosView")
-                                                navigateToPhotosView = true
-
-                                                }
                                     }
 
                                     Spacer()
@@ -46,11 +45,6 @@ struct HomePage: View {
                                         Image(systemName: "person.crop.circle")
                                             .font(.system(size: 40))
                                             .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
-                                            .onTapGesture {
-                                                logNavigation(from: "HomePage", to: "ProfileView")
-                                                navigateToProfileView = true
-                                                }
-                                            
                                     }
                                 }
                                 .padding(.horizontal)
@@ -70,8 +64,22 @@ struct HomePage: View {
 
                                 // Cars List
                                 VStack(alignment: .center, spacing: 16) {
-                                    ForEach(carManager.cars, id: \.self) { car in
-                                        CarCardView(car: car)
+                                    ForEach(carManager.cars, id: \.id) { car in
+                                        CarCardView(
+                                            car: car,
+                                            onFreeServiceTap: {
+                                                print("Free Service tapped for car: \(car.carModel)")
+                                                // Handle Free Service action here
+                                            },
+                                            onUpdateTap: {
+                                                selectedCar = car
+                                                navigateToUpdateView = true
+                                            }
+                                        )
+                                        .onTapGesture {
+                                            selectedCar = car
+                                            navigateToDetailView = true
+                                        }
                                     }
                                 }
                                 .padding(.horizontal)
@@ -91,43 +99,47 @@ struct HomePage: View {
                     )
             }
             .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
-            .onAppear {
-                print("Fetching cars...") // Debug message
-                print("CarManager.shared.cars before fetch:", CarManager.shared.cars) // Debug the existing cars list
-
-                fetchCars() // Fetch cars from the backend
-                
-                // Print the cars after fetching them (add a slight delay to ensure fetchCars completes)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    print("CarManager.shared.cars after fetch:", CarManager.shared.cars) // Debug the updated cars list
-                    CarManager.shared.cars.forEach { car in
-                        print("Car details - Model: \(car.carModel), Make: \(car.make), Year: \(car.year), Image URL: \(car.imageUrl ?? "No URL")")
-                    }
+            .navigationDestination(isPresented: $navigateToDetailView) {
+                if let car = selectedCar {
+                    CarDetailView(car: car)
                 }
             }
-            .navigationDestination(isPresented: $navigateToPhotosView) {
-                PhotosView()
+            .navigationDestination(isPresented: $navigateToUpdateView) {
+                if let car = selectedCar {
+                    UpdateCarView(car: .constant(car), onUpdate: { updatedCar, updatedImage in
+                        NetworkService.shared.updateCar(updatedCar: updatedCar, updatedImage: updatedImage) { result in
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success(let responseCar):
+                                    // Update the local car list with the updated car
+                                    if let index = carManager.cars.firstIndex(where: { $0.id == responseCar.id }) {
+                                        carManager.cars[index] = responseCar
+                                    }
+                                    print("Car updated successfully!")
+                                case .failure(let error):
+                                    print("Failed to update car:", error.localizedDescription)
+                                }
+                            }
+                        }
+                        navigateToUpdateView = false // Return to HomePage after the update
+                    })
                 }
-                .navigationDestination(isPresented: $navigateToProfileView) {
-                    ProfileView()
-                }
+            }
+        }
+        .onAppear {
+            fetchCars()
         }
     }
 
     // Fetch cars logic
     private func fetchCars() {
-        isLoading = true
         NetworkService.shared.fetchUserCars { result in
             DispatchQueue.main.async {
-                isLoading = false
                 switch result {
                 case .success(let fetchedCars):
-                    print("Fetched Cars:", fetchedCars) // Debugging
-                    CarManager.shared.cars = fetchedCars
-                    errorMessage = nil
+                    carManager.cars = fetchedCars
                 case .failure(let error):
                     print("Error Fetching Cars:", error.localizedDescription)
-                    errorMessage = "Failed to load cars: \(error.localizedDescription)"
                 }
             }
         }
@@ -139,52 +151,90 @@ struct HomePage: View {
 struct CarCardView: View {
     let car: Car
 
-    var body: some View {
-        VStack(alignment: .leading) {
-            // Display car image from imageUrl or show a placeholder
-            if let imageUrl = car.imageUrl?.replacingOccurrences(of: "localhost", with: "127.0.0.1"),
-                           let url = URL(string: imageUrl) {
-                AsyncImage(url: url) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 180)
-                            .cornerRadius(25)
-                    } else if let error = phase.error {
-                        
-                        Image(systemName: "car.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 180)
-                            .cornerRadius(10)
-                            .foregroundColor(.gray)
-                    } else {
-                        ProgressView() // Show a loader while the image loads
-                            .frame(height: 180)
-                    }
-                }
-            } else {
-                Image(systemName: "car.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 180)
-                    .cornerRadius(10)
-                    .foregroundColor(.gray)
-            }
+    var onFreeServiceTap: (() -> Void)? // Closure for Free Service Icon tap
+    var onUpdateTap: (() -> Void)? // Closure for Update Icon tap
 
-            // Car details
-            VStack(alignment: .leading, spacing: 4) {
-                Text(car.carModel) // Car model
-                    .font(.headline)
-                Text("\(car.year) - \(car.make)") // Year and make
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            NavigationLink(destination: CarDetailView(car: car)) {
+            VStack(alignment: .leading) {
+                // Display car image from imageUrl or show a placeholder
+                if let imageUrl = car.imageUrl?.replacingOccurrences(of: "localhost", with: "127.0.0.1"),
+                   let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 340, height: 180)
+                                .clipped()
+                                .cornerRadius(15)
+                        } else if phase.error != nil {
+                            Image(systemName: "car.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 340, height: 180)
+                                .cornerRadius(15)
+                                .foregroundColor(.gray)
+                        } else {
+                            ProgressView() // Show a loader while the image loads
+                                .frame(width: 340, height: 180)
+                        }
+                    }
+                } else {
+                    Image(systemName: "car.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 340, height: 180)
+                        .cornerRadius(15)
+                        .foregroundColor(.gray)
+                }
+                
+                // Car details
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(car.carModel) // Car model
+                        .font(.headline)
+                    Text("\(car.year) - \(car.make)") // Year and make
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 8)
             }
+            .frame(width: 340) // Fixed width for the entire card
+            .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255).opacity(0.2)) // Background color for the card
+            .cornerRadius(15)
+            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         }
-        .padding()
-        .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255).opacity(0.2)) // Background color for the card
-        .cornerRadius(15)
+            // Icons in the bottom-right corner
+            HStack(spacing: 16) {
+                Button(action: {
+                    onFreeServiceTap?()
+                }) {
+                    Image(systemName: "wrench.and.screwdriver") // Free Service Icon
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 25, height: 25)
+                        .padding(8)
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                }
+
+                Button(action: {
+                    onUpdateTap?()
+                }) {
+                    Image(systemName: "square.and.pencil") // Update Icon
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 25, height: 25)
+                        .padding(8)
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                }
+            }
+            .padding(8)
+        }
+        .padding(.horizontal)
     }
 }
 

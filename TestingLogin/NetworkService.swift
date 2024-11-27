@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class NetworkService {
     static let shared = NetworkService()
@@ -481,5 +482,90 @@ class NetworkService {
            }.resume()
        }
     
+    
+    
+    func updateCar(updatedCar: Car, updatedImage: UIImage?, completion: @escaping (Result<Car, Error>) -> Void) {
+            // Construct the URL using the car's ID
+            guard let url = URL(string: "http://localhost:3000/cars/\(updatedCar.id)") else {
+                print("Invalid URL")
+                return
+            }
+
+            guard let token = TokenManager.shared.getToken(for: TokenManager.accessTokenKey) else {
+                print("No auth token found")
+                return
+            }
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "PATCH" // PATCH request to update the car
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+            if let updatedImage = updatedImage {
+                // If there's an updated image, handle it as a multipart/form-data request
+                let boundary = UUID().uuidString
+                request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+                var data = Data()
+
+                // Add the JSON part
+                if let jsonData = try? JSONEncoder().encode(updatedCar),
+                   let jsonString = String(data: jsonData, encoding: .utf8) {
+                    data.append("--\(boundary)\r\n".data(using: .utf8)!)
+                    data.append("Content-Disposition: form-data; name=\"data\"\r\n\r\n".data(using: .utf8)!)
+                    data.append("\(jsonString)\r\n".data(using: .utf8)!)
+                }
+
+                // Add the image part
+                data.append("--\(boundary)\r\n".data(using: .utf8)!)
+                data.append("Content-Disposition: form-data; name=\"image\"; filename=\"car.jpg\"\r\n".data(using: .utf8)!)
+                data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+                data.append(updatedImage.jpegData(compressionQuality: 0.8)!)
+                data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+
+                request.httpBody = data
+            } else {
+                // If there's no image, send only the car data as JSON
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                do {
+                    request.httpBody = try JSONEncoder().encode(updatedCar)
+                } catch {
+                    print("Error encoding car data:", error)
+                    completion(.failure(error))
+                    return
+                }
+            }
+
+            // Perform the network request
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    print("Network error:", error.localizedDescription)
+                    completion(.failure(error))
+                    return
+                }
+
+                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                    print("Invalid response or status code")
+                    if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                        print("Response string:", responseString)
+                    }
+                    completion(.failure(NSError(domain: "InvalidResponse", code: 0, userInfo: nil)))
+                    return
+                }
+
+                guard let data = data else {
+                    print("No data received")
+                    completion(.failure(NSError(domain: "NoData", code: 0, userInfo: nil)))
+                    return
+                }
+
+                do {
+                    let updatedCar = try JSONDecoder().decode(Car.self, from: data)
+                    completion(.success(updatedCar))
+                } catch {
+                    print("Error decoding updated car:", error)
+                    completion(.failure(error))
+                }
+            }.resume()
+        }
     
 }

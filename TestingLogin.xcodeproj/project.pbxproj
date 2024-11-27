@@ -14,6 +14,8 @@
 		6C5E8B032CE42EE300542CA7 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 6C5E8B022CE42EE300542CA7 /* GoogleSignIn */; };
 		6C5E8B072CE4303000542CA7 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6C5E8B062CE4303000542CA7 /* GoogleSignInSwift */; };
 		6C63C2A62CE2A53F00FC1543 /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C63C2A52CE2A53F00FC1543 /* TokenManager.swift */; };
+		6C84DD6F2CF782ED0068A9CD /* CarDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C84DD6E2CF782ED0068A9CD /* CarDetailView.swift */; };
+		6C84DD712CF78B190068A9CD /* UpdateCarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C84DD702CF78B190068A9CD /* UpdateCarView.swift */; };
 		6CBC1AA32CF4EAE500076D18 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBC1AA22CF4EAE500076D18 /* Utilities.swift */; };
 		F410F75A2CD967E000411599 /* ForgotPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = F410F7592CD967E000411599 /* ForgotPassword.swift */; };
 		F410F75C2CD967F700411599 /* PasswordResetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F410F75B2CD967F700411599 /* PasswordResetView.swift */; };
@@ -70,6 +72,8 @@
 		6C5A49F02CF04CBE00731929 /* CarMaintenanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarMaintenanceView.swift; sourceTree = "<group>"; };
 		6C5E8AFF2CE41F4900542CA7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6C63C2A52CE2A53F00FC1543 /* TokenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManager.swift; sourceTree = "<group>"; };
+		6C84DD6E2CF782ED0068A9CD /* CarDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarDetailView.swift; sourceTree = "<group>"; };
+		6C84DD702CF78B190068A9CD /* UpdateCarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCarView.swift; sourceTree = "<group>"; };
 		6CBC1AA22CF4EAE500076D18 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		F410F7592CD967E000411599 /* ForgotPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPassword.swift; sourceTree = "<group>"; };
 		F410F75B2CD967F700411599 /* PasswordResetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetView.swift; sourceTree = "<group>"; };
@@ -187,6 +191,8 @@
 				F4B64C6C2CE0B45D00DF698D /* WelcomeView.swift */,
 				F4B64C6E2CE0B59E00DF698D /* PhotosView.swift */,
 				F45916E02CE540B80012E7BC /* HomePage.swift */,
+				6C84DD6E2CF782ED0068A9CD /* CarDetailView.swift */,
+				6C84DD702CF78B190068A9CD /* UpdateCarView.swift */,
 				6C5A49F02CF04CBE00731929 /* CarMaintenanceView.swift */,
 				F45916E42CE72B680012E7BC /* CarManager.swift */,
 				F4A35F842CECC9B700822BE4 /* BottomNavItem.swift */,
@@ -387,7 +393,9 @@
 				F49383E62CDA86B20048A57C /* ProfileView.swift in Sources */,
 				6C5A49EF2CF0352200731929 /* APIResponse.swift in Sources */,
 				F49383EA2CDA8C950048A57C /* ChangePassword.swift in Sources */,
+				6C84DD712CF78B190068A9CD /* UpdateCarView.swift in Sources */,
 				F4A35F8B2CED338100822BE4 /* CarService.swift in Sources */,
+				6C84DD6F2CF782ED0068A9CD /* CarDetailView.swift in Sources */,
 				F4F600112CBC79D30085DCA7 /* TestingLoginApp.swift in Sources */,
 				F45916E12CE540B90012E7BC /* HomePage.swift in Sources */,
 				F4A1E5472CDE05F2007166F1 /* NetworkService.swift in Sources */,
