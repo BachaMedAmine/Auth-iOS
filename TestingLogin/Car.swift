@@ -9,6 +9,7 @@ struct Car: Codable, Identifiable, Hashable {
     let mileage: Int
     let owner: String?
     let imageUrl: String?
+    let engine: String?
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -18,5 +19,7 @@ struct Car: Codable, Identifiable, Hashable {
         case mileage
         case owner
         case imageUrl
+        case engine 
+
     }
 }

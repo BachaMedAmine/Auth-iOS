@@ -33,6 +33,7 @@ struct LoginScreen: View {
     @State private var shouldNavigateToWelcome = false // For WelcomeView
     @State private var errorMessage = ""
     @State private var email: String = ""
+    @Environment(\.presentationMode) var presentationMode
     
     var onLoginSuccess: () -> Void
 
@@ -89,6 +90,8 @@ struct LoginScreen: View {
                             
                             VStack(spacing: 27) {
                                 CustomTF(sfIcon: "at", hint: "Email Address", value: $emailAddress)
+                                    .autocapitalization(.none)
+                                    .disableAutocorrection(true)
                                 CustomTF(sfIcon: "lock", hint: "Password", isPassword: true, value: $password)
                                 
                                 HStack {
@@ -236,6 +239,8 @@ struct LoginScreen: View {
     }
     
     private func login() {
+        let normalizedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        
         NetworkService.shared.signin(email: emailAddress, password: password) { result in
             DispatchQueue.main.async {
                 switch result {

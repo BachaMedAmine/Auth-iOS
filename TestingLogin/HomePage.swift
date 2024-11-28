@@ -247,7 +247,8 @@ struct MockData {
             year: 2015,
             mileage: 75000,
             owner: "John Doe",
-            imageUrl: "https://via.placeholder.com/300"
+            imageUrl: "https://via.placeholder.com/300",
+            engine: "1.0"
         ),
         Car(
             id: "2",
@@ -256,7 +257,8 @@ struct MockData {
             year: 2020,
             mileage: 20000,
             owner: "Jane Doe",
-            imageUrl: "https://via.placeholder.com/300"
+            imageUrl: "https://via.placeholder.com/300",
+            engine: "1.0"
         ),
         Car(
             id: "3",
@@ -265,7 +267,8 @@ struct MockData {
             year: 2020,
             mileage: 20000,
             owner: "Jane Doe",
-            imageUrl: nil // Testing placeholder
+            imageUrl: nil ,
+            engine: "1.0"
         )
     ]
 }

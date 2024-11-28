@@ -73,6 +73,7 @@ class NetworkService {
             completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
             return
         }
+        let normalizedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -566,6 +567,52 @@ class NetworkService {
                     completion(.failure(error))
                 }
             }.resume()
+        }
+    
+    func changePassword(
+            oldPassword: String,
+            newPassword: String,
+            confirmNewPassword: String,
+            completion: @escaping (Result<Void, Error>) -> Void
+        ) {
+            guard let token = TokenManager.shared.getToken(for: TokenManager.accessTokenKey),
+                  let url = URL(string: "http://localhost:3000/users/change-password") else {
+                completion(.failure(NSError(domain: "Invalid URL or token", code: 0, userInfo: nil)))
+                return
+            }
+
+            var request = URLRequest(url: url)
+            request.httpMethod = "PUT"
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+            let body: [String: String] = [
+                "oldPassword": oldPassword,
+                "newPassword": newPassword,
+                "confirmNewPassword": confirmNewPassword
+            ]
+
+            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(.failure(NSError(domain: "Invalid response", code: 0, userInfo: nil)))
+                    return
+                }
+
+                if (200...299).contains(httpResponse.statusCode) {
+                    completion(.success(()))
+                } else {
+                    let message = String(data: data ?? Data(), encoding: .utf8) ?? "Unknown error"
+                    completion(.failure(NSError(domain: message, code: httpResponse.statusCode, userInfo: nil)))
+                }
+            }
+            task.resume()
         }
     
 }

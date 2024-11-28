@@ -14,9 +14,11 @@ struct UpdateCarView: View {
     @State private var newModel: String = ""
     @State private var newYear: String = ""
     @State private var newMileage: String = ""
+    @State private var newEngine: String = "" 
     @State private var selectedImage: UIImage? // State for the new image
     @State private var showPhotoPicker = false
     @State private var showCamera = false
+    
 
     var onUpdate: (Car, UIImage?) -> Void // Callback with updated car details and optional image
 
@@ -35,6 +37,8 @@ struct UpdateCarView: View {
                         .keyboardType(.numberPad)
                     TextField("Mileage", text: $newMileage)
                         .keyboardType(.numberPad)
+                    TextField("Engine", text: $newEngine) // Add this line
+                        .padding(.horizontal, 20)
                 }
 
                 Section(header: Text("Car Image")) {
@@ -94,7 +98,9 @@ struct UpdateCarView: View {
                     year: Int(newYear) ?? car.year,
                     mileage: Int(newMileage) ?? car.mileage,
                     owner: car.owner,
-                    imageUrl: car.imageUrl // Keep the existing URL if no new image is uploaded
+                    imageUrl: car.imageUrl,
+                    engine: newEngine.isEmpty ? car.engine : newEngine
+
                 )
                 // Call the update callback with the updated details and selected image
                 onUpdate(updatedCar, selectedImage)

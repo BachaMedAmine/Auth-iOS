@@ -72,6 +72,8 @@ struct CarDetailView: View {
                     DetailRow(title: "Make", value: car.make, color: .blue)
                     DetailRow(title: "Year", value: "\(car.year)", color: .green)
                     DetailRow(title: "Mileage", value: "\(car.mileage) km", color: .purple)
+                    DetailRow(title: "Engine", value: car.engine ?? "Unknown", color: .red)
+
                 }
                 .padding()
                 .background(LinearGradient(
@@ -121,7 +123,8 @@ struct CarDetailView_Previews: PreviewProvider {
             year: 2014,
             mileage: 75000,
             owner: "User1",
-            imageUrl: "https://via.placeholder.com/300"
+            imageUrl: "https://via.placeholder.com/300",
+            engine: "1.0"
         ))
     }
 }
