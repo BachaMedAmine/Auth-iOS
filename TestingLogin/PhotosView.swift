@@ -15,68 +15,88 @@ struct PhotosView: View {
 
     
     var body: some View {
-           NavigationStack {
-               ZStack {
-                   // Background image
-                   Image("Bugatti")
-                       .resizable()
-                       .scaledToFill()
-                       .edgesIgnoringSafeArea(.all)
+            NavigationStack {
+                ZStack {
+                    // Background image
+                    Image("Bugatti")
+                        .resizable()
+                        .scaledToFill()
+                        .edgesIgnoringSafeArea(.all)
 
-                   // Gradient overlay
-                   LinearGradient(
-                       gradient: Gradient(colors: [Color.black.opacity(0.5), Color.clear]),
-                       startPoint: .top,
-                       endPoint: .bottom
-                   )
-                   .edgesIgnoringSafeArea(.all)
+                    // Gradient overlay
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.black.opacity(0.5), Color.clear]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .edgesIgnoringSafeArea(.all)
 
-                   VStack(spacing: 35) {
-                       // Slider for opening the camera
-                       SliderActionView(
-                           label: "Open Camera",
-                           sliderOffset: $sliderOffsetCamera,
-                           action: {
-                               logNavigation(from: "PhotosView", to: "Camera")
-                               showCamera = true
-                           }
-                       )
-                       .frame(width: 300, height: 60)
+                    VStack(spacing: 35) {
+                        // Slider for opening the camera
+                        SliderActionView(
+                            label: "Open Camera",
+                            sliderOffset: $sliderOffsetCamera,
+                            action: {
+                                logNavigation(from: "PhotosView", to: "Camera")
+                                showCamera = true
+                            }
+                        )
+                        .frame(width: 300, height: 60)
 
-                       // Slider for selecting a photo from the gallery
-                       SliderActionView(
-                           label: "Select Photos",
-                           sliderOffset: $sliderOffsetPhotos,
-                           action: {
-                               logNavigation(from: "PhotosView", to: "PhotoPicker")
-                               showPhotoPicker = true
-                           }
-                       )
-                       .frame(width: 300, height: 60)
+                        // Slider for selecting a photo from the gallery
+                        SliderActionView(
+                            label: "Select Photos",
+                            sliderOffset: $sliderOffsetPhotos,
+                            action: {
+                                logNavigation(from: "PhotosView", to: "PhotoPicker")
+                                showPhotoPicker = true
+                            }
+                        )
+                        .frame(width: 300, height: 60)
 
-                       // Slider for analyzing the selected image
-                       SliderActionView(
-                           label: isLoading ? "" : "Analyze Image",
-                           sliderOffset: $sliderOffsetAnalyzeImage,
-                           action: {
-                               if let selectedImage = selectedImage {
-                                   uploadImageToBackend(image: selectedImage) { details in
-                                       DispatchQueue.main.async {
-                                           CarManager.shared.cars.append(details)
-                                           logNavigation(from: "PhotosView", to: "HomePage")
-                                           navigateToHome = true
-                                       }
-                                   }
-                               } else {
-                                   print("No image selected. Please select an image before analyzing.")
-                               }
-                           }
-                       )
-                       .disabled(selectedImage == nil || isLoading)
-                       .frame(width: 300, height: 60)
-                   }
-                   .padding(.horizontal, 20)
-               }
+                        // Slider for analyzing the selected image
+                        SliderActionView(
+                            label: isLoading ? "" : "Analyze Image",
+                            sliderOffset: $sliderOffsetAnalyzeImage,
+                            action: {
+                                if let selectedImage = selectedImage {
+                                    isLoading = true // Start loading
+                                    uploadImageToBackend(image: selectedImage) { details in
+                                        DispatchQueue.main.async {
+                                            isLoading = false // Stop loading when the process completes
+                                            CarManager.shared.cars.append(details)
+                                            logNavigation(from: "PhotosView", to: "HomePage")
+                                            navigateToHome = true
+                                        }
+                                    }
+                                } else {
+                                    print("No image selected. Please select an image before analyzing.")
+                                }
+                            }
+                        )
+                        .disabled(selectedImage == nil || isLoading)
+                        .frame(width: 300, height: 60)
+                    }
+                    .padding(.horizontal, 20)
+
+                    // Loading Overlay
+                    if isLoading {
+                        ZStack {
+                            Color.black.opacity(0.6)
+                                .edgesIgnoringSafeArea(.all)
+
+                            VStack(spacing: 20) {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(2)
+
+                                Text("Processing, please wait...")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                    }
+                }
                .navigationDestination(isPresented: $navigateToHome) {
                    HomePage()
                        .onAppear {
@@ -84,6 +104,7 @@ struct PhotosView: View {
                        }
                }
            }
+        
            .fullScreenCover(isPresented: $showCamera) {
                AccessCameraView(selectedImage: $selectedImage)
            }
@@ -164,9 +185,7 @@ struct PhotosView: View {
         }.resume()
     }
 
-
 }
-
 
 struct SliderActionView: View {
     let label: String

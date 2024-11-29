@@ -7,6 +7,9 @@
     " " : {
 
     },
+    "%lld" : {
+
+    },
     "%lld - %@" : {
       "localizations" : {
         "en" : {
@@ -60,12 +63,6 @@
     "Car Image" : {
 
     },
-    "Car Maintenance" : {
-
-    },
-    "Car: %@" : {
-
-    },
     "Change Password" : {
       "localizations" : {
         "fr" : {
@@ -99,9 +96,6 @@
           }
         }
       }
-    },
-    "Due: %@" : {
-
     },
     "Edit Profile" : {
       "localizations" : {
@@ -244,6 +238,12 @@
         }
       }
     },
+    "Last: %@" : {
+
+    },
+    "Last: Unknown" : {
+
+    },
     "Let's discover your car here" : {
       "localizations" : {
         "fr" : {
@@ -253,6 +253,9 @@
           }
         }
       }
+    },
+    "Loading..." : {
+
     },
     "Log in to your account using email or social" : {
       "localizations" : {
@@ -290,6 +293,9 @@
     "Mileage" : {
 
     },
+    "Mileage: %lld km" : {
+
+    },
     "Model" : {
 
     },
@@ -314,6 +320,12 @@
       }
     },
     "New Password" : {
+
+    },
+    "Next: %@ km" : {
+
+    },
+    "Next: Unknown" : {
 
     },
     "No cars available. Add a car to get started!" : {
@@ -387,6 +399,9 @@
           }
         }
       }
+    },
+    "Processing, please wait..." : {
+
     },
     "Profile View" : {
       "localizations" : {

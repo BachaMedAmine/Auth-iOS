@@ -17,6 +17,9 @@ struct HomePage: View {
     @State private var selectedCar: Car? // Holds the selected car for navigation
     @State private var navigateToDetailView = false // State for CarDetailView navigation
     @State private var navigateToUpdateView = false // State for CarUpdateView navigation
+    @State private var selectedCarForMaintenance: Car? // Track selected car for MaintenanceView
+      @State private var navigateToMaintenance = false // Trigger for MaintenanceView navigation
+
 
 
     var body: some View {
@@ -68,17 +71,17 @@ struct HomePage: View {
                                         CarCardView(
                                             car: car,
                                             onFreeServiceTap: {
-                                                print("Free Service tapped for car: \(car.carModel)")
-                                                // Handle Free Service action here
+                                                self.selectedCarForMaintenance = car
+                                                self.navigateToMaintenance = true
                                             },
                                             onUpdateTap: {
-                                                selectedCar = car
-                                                navigateToUpdateView = true
+                                                self.selectedCar = car
+                                                self.navigateToUpdateView = true
                                             }
                                         )
                                         .onTapGesture {
-                                            selectedCar = car
-                                            navigateToDetailView = true
+                                            self.selectedCar = car
+                                            self.navigateToDetailView = true
                                         }
                                     }
                                 }
@@ -91,7 +94,7 @@ struct HomePage: View {
                 }
 
                 // Bottom Navigation Bar
-                BottomNavItem(selectedTab: $selectedTab)
+                BottomNavItem(selectedTab: .constant(.home))
                     .frame(height: 70)
                     .background(
                         Color.white
@@ -99,6 +102,11 @@ struct HomePage: View {
                     )
             }
             .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+            .navigationDestination(isPresented: $navigateToMaintenance) {
+                if let car = selectedCarForMaintenance {
+                    MaintenanceView(car: car)
+                }
+            }
             .navigationDestination(isPresented: $navigateToDetailView) {
                 if let car = selectedCar {
                     CarDetailView(car: car)
