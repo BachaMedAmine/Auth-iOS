@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 
 
@@ -13,6 +14,8 @@ import SwiftUI
 struct TestingLoginApp: App {
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false // Track if the user is logged in
     @AppStorage("isFirstTimeUser") private var isFirstTimeUser: Bool = true // Track if it's the user's first time
+    @AppStorage("selectedTheme") private var selectedTheme: String = "system" // Default theme: system
+
 
     var body: some Scene {
         WindowGroup {
@@ -44,6 +47,7 @@ struct TestingLoginApp: App {
                     })
                 }
             }
+            .preferredColorScheme(selectedColorScheme()) // Appliquer le thème choisi
             .onAppear {
                 checkFirstTimeUser()
                 checkLoginStatus()
@@ -56,6 +60,19 @@ struct TestingLoginApp: App {
             }
         }
     }
+    
+    private func selectedColorScheme() -> ColorScheme? {
+        print("🟢 Selected Theme:", selectedTheme) // Log pour vérifier la sélection
+        switch selectedTheme {
+        case "light":
+            return .light
+        case "dark":
+            return .dark
+        default:
+            return nil // Mode système
+        }
+    }
+
     
     private func checkFirstTimeUser() {
         // Check if the cars array is empty
@@ -84,6 +101,16 @@ struct TestingLoginApp: App {
             }
         } else {
             isLoggedIn = false
+        }
+    }
+    
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+            print("Pending Notifications: \(requests.count)")
+            for request in requests {
+                print("Notification ID: \(request.identifier)")
+                print("Content: \(request.content.title), \(request.content.body)")
+            }
         }
     }
 }

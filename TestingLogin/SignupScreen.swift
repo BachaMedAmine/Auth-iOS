@@ -8,6 +8,15 @@
 import SwiftUI
 import GoogleSignIn
 
+
+enum FieldSignup: Hashable {
+        case emailAddress
+        case fullName
+        case password
+        case confirmPassword
+    }
+
+
 struct SignupScreen: View {
     @State private var fullName: String = ""
     @State private var emailAddress: String = ""
@@ -18,6 +27,8 @@ struct SignupScreen: View {
     @State private var passwordError: String? = nil
     @State private var confirmPasswordError: String? = nil
     @State private var isChecked: Bool = false
+    @FocusState private var focusedField: FieldSignup?
+    
     
     @State private var showLogin = false
     @State private var showAlert = false
@@ -28,7 +39,10 @@ struct SignupScreen: View {
         ZStack {
             Color(.systemBackground)
                 .edgesIgnoringSafeArea(.all)
-            
+                .onTapGesture {
+                                    focusedField = nil // Désélectionne tous les champs de texte
+                                }
+                .allowsHitTesting(true)
             VStack(alignment: .center) {
                 // Logo
                 Image("car")
@@ -67,12 +81,16 @@ struct SignupScreen: View {
                     
                     VStack(spacing: 27) {
                         CustomTF(sfIcon: "person", hint: "Full Name", value: $fullName)
+                            .focused($focusedField, equals: .fullName)
                         
                         CustomTF(sfIcon: "at", hint: "Email Address", value: $emailAddress)
+                            .focused($focusedField, equals: .emailAddress)
                         
                         CustomTF(sfIcon: "lock", hint: "Password", isPassword: true, value: $password)
+                            .focused($focusedField, equals: .password)
                         
                         CustomTF(sfIcon: "lock.shield", hint: "Confirm Password", isPassword: true, value: $confirmPassword)
+                            .focused($focusedField, equals: .confirmPassword)
                     }
                     
                     // Checkbox
@@ -201,6 +219,7 @@ struct SignupScreen: View {
         .alert(isPresented: $showAlert) {
             Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
+      
     }
     
     

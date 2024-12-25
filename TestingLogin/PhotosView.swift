@@ -15,113 +15,136 @@ struct PhotosView: View {
 
     
     var body: some View {
-            NavigationStack {
-                ZStack {
-                    // Background image
-                    Image("Bugatti")
-                        .resizable()
-                        .scaledToFill()
-                        .edgesIgnoringSafeArea(.all)
-
-                    // Gradient overlay
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.black.opacity(0.5), Color.clear]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
+        NavigationStack {
+            ZStack {
+                // Background image
+                Image("Bugatti")
+                    .resizable()
+                    .scaledToFill()
                     .edgesIgnoringSafeArea(.all)
+                    .opacity(0.3)
 
-                    VStack(spacing: 35) {
-                        // Slider for opening the camera
-                        SliderActionView(
-                            label: "Open Camera",
-                            sliderOffset: $sliderOffsetCamera,
-                            action: {
-                                logNavigation(from: "PhotosView", to: "Camera")
-                                showCamera = true
-                            }
-                        )
-                        .frame(width: 300, height: 60)
+                // Gradient overlay
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.black.opacity(0.5), Color.clear]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .edgesIgnoringSafeArea(.all)
 
-                        // Slider for selecting a photo from the gallery
-                        SliderActionView(
-                            label: "Select Photos",
-                            sliderOffset: $sliderOffsetPhotos,
-                            action: {
-                                logNavigation(from: "PhotosView", to: "PhotoPicker")
-                                showPhotoPicker = true
-                            }
-                        )
-                        .frame(width: 300, height: 60)
+                VStack(spacing: 35) {
+                    // Slider for opening the camera
+                    SliderActionView(
+                        label: "Open Camera",
+                        sliderOffset: $sliderOffsetCamera,
+                        action: {
+                            logNavigation(from: "PhotosView", to: "Camera")
+                            showCamera = true
+                        }
+                    )
+                    .frame(width: 300, height: 60)
 
-                        // Slider for analyzing the selected image
-                        SliderActionView(
-                            label: isLoading ? "" : "Analyze Image",
-                            sliderOffset: $sliderOffsetAnalyzeImage,
-                            action: {
-                                if let selectedImage = selectedImage {
-                                    isLoading = true // Start loading
-                                    uploadImageToBackend(image: selectedImage) { details in
-                                        DispatchQueue.main.async {
-                                            isLoading = false // Stop loading when the process completes
-                                            CarManager.shared.cars.append(details)
-                                            logNavigation(from: "PhotosView", to: "HomePage")
-                                            navigateToHome = true
-                                        }
+                    // Slider for selecting a photo from the gallery
+                    SliderActionView(
+                        label: "Select Photos",
+                        sliderOffset: $sliderOffsetPhotos,
+                        action: {
+                            logNavigation(from: "PhotosView", to: "PhotoPicker")
+                            showPhotoPicker = true
+                        }
+                    )
+                    .frame(width: 300, height: 60)
+
+                    // Slider for analyzing the selected image
+                    SliderActionView(
+                        label: isLoading ? "" : "Analyze Image",
+                        sliderOffset: $sliderOffsetAnalyzeImage,
+                        action: {
+                            if let selectedImage = selectedImage {
+                                isLoading = true // Start loading
+                                uploadImageToBackend(image: selectedImage) { details in
+                                    DispatchQueue.main.async {
+                                        isLoading = false // Stop loading when the process completes
+                                        CarManager.shared.cars.append(details)
+                                        logNavigation(from: "PhotosView", to: "HomePage")
+                                        navigateToHome = true
                                     }
-                                } else {
-                                    print("No image selected. Please select an image before analyzing.")
                                 }
+                            } else {
+                                print("No image selected. Please select an image before analyzing.")
                             }
-                        )
-                        .disabled(selectedImage == nil || isLoading)
-                        .frame(width: 300, height: 60)
-                    }
-                    .padding(.horizontal, 20)
-
-                    // Loading Overlay
-                    if isLoading {
-                        ZStack {
-                            Color.black.opacity(0.6)
-                                .edgesIgnoringSafeArea(.all)
-
-                            VStack(spacing: 20) {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(2)
-
-                                Text("Processing, please wait...")
+                        }
+                    )
+                    .disabled(selectedImage == nil || isLoading)
+                    .frame(width: 300, height: 60)
+                    
+                    VStack {
+                    
+                        HStack {
+                            Spacer().frame(width: 250)
+                            Button(action: {
+                                logNavigation(from: "PhotosView", to: "HomePage")
+                                navigateToHome = true
+                            }) {
+                                Text("Skip")
                                     .font(.headline)
                                     .foregroundColor(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 10)
+                                  
+                                    .cornerRadius(20)
+                                    .shadow(radius: 5)
                             }
+                            .padding(.horizontal, 5)
                         }
                     }
                 }
-               .navigationDestination(isPresented: $navigateToHome) {
-                   HomePage()
-                       .onAppear {
-                           logNavigation(from: "PhotosView", to: "HomePage")
-                       }
-               }
-           }
-        
-           .fullScreenCover(isPresented: $showCamera) {
-               AccessCameraView(selectedImage: $selectedImage)
-           }
-           .sheet(isPresented: $showPhotoPicker) {
-               PhotosPickerView(selectedItem: $selectedItem, imageFromPicker: $selectedImage)
-           }
-           .onChange(of: selectedItem) { newItem in
-               Task {
-                   if let data = try? await newItem?.loadTransferable(type: Data.self),
-                      let uiImage = UIImage(data: data) {
-                       selectedImage = uiImage
-                   } else {
-                       print("Failed to load the image")
-                   }
-               }
-           }
-       }
+                .padding(.horizontal, 20)
+
+                // Loading Overlay
+                if isLoading {
+                    ZStack {
+                        Color.black.opacity(0.6)
+                            .edgesIgnoringSafeArea(.all)
+
+                        VStack(spacing: 20) {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(2)
+
+                            Text("Processing, please wait...")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+
+                // Skip Button
+                
+            }
+            .navigationDestination(isPresented: $navigateToHome) {
+                HomePage()
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .fullScreenCover(isPresented: $showCamera) {
+            AccessCameraView(selectedImage: $selectedImage)
+        }
+        .sheet(isPresented: $showPhotoPicker) {
+            PhotosPickerView(selectedItem: $selectedItem, imageFromPicker: $selectedImage)
+        }
+        .onChange(of: selectedItem) { newItem in
+            Task {
+                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                   let uiImage = UIImage(data: data) {
+                    selectedImage = uiImage
+                } else {
+                    print("Failed to load the image")
+                }
+            }
+        }
+    }
+
     
     // Fonction pour envoyer une image au backend
     func uploadImageToBackend(image: UIImage, completion: @escaping (Car) -> Void) {

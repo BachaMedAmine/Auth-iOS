@@ -24,4 +24,14 @@ class TokenManager {
         UserDefaults.standard.removeObject(forKey: TokenManager.accessTokenKey)
         UserDefaults.standard.removeObject(forKey: TokenManager.refreshTokenKey)
     }
+    
+    
+    func getUserId() -> String? {
+           guard let token = getToken(for: TokenManager.accessTokenKey) else { return nil }
+           let parts = token.split(separator: ".")
+           guard parts.count == 3,
+                 let payloadData = Data(base64Encoded: String(parts[1])),
+                 let payload = try? JSONSerialization.jsonObject(with: payloadData) as? [String: Any] else { return nil }
+           return payload["id"] as? String
+       }
 }

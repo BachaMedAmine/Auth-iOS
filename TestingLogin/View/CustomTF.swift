@@ -32,13 +32,18 @@ struct CustomTF: View {
                         if showPassword{
                             // un textfield normal
                             TextField(hint,text:$value)
+                                
+                                
                         } else {
                             // un textfield special password
                             SecureField(hint,text:$value)
+                                
+                            }
                         }
-                    }
+                    
                 } else {
                     TextField(hint, text:$value)
+                                       
                 }
                 
                 Divider()

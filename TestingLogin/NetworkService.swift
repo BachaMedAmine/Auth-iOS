@@ -433,7 +433,51 @@ class NetworkService {
         }.resume()
     }
     
-    
+    func fetchUserProfile(completion: @escaping (Result<String, Error>) -> Void) {
+        guard let userId = TokenManager.shared.getUserId(), // Récupérer l'ID de l'utilisateur
+              let url = URL(string: "http://localhost:3000/users/\(userId)") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+            return
+        }
+
+        guard let token = TokenManager.shared.getToken(for: TokenManager.accessTokenKey) else {
+            completion(.failure(NSError(domain: "Missing Token", code: 401, userInfo: nil)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(NSError(domain: "Invalid Response", code: 500, userInfo: nil)))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No Data", code: 404, userInfo: nil)))
+                return
+            }
+
+            do {
+                let responseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                if let name = responseJSON?["name"] as? String {
+                    completion(.success(name))
+                } else {
+                    completion(.failure(NSError(domain: "Invalid JSON Structure", code: 500, userInfo: nil)))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
     
     func updateUserName(newName: String, completion: @escaping (Result<String, Error>) -> Void) {
         guard let url = URL(string: "http://localhost:3000/auth/profile") else {
@@ -615,17 +659,47 @@ class NetworkService {
         task.resume()
     }
     
-    
+    enum NetworkError: Error {
+        case decodingError
+        case invalidResponse
+        case noData
+        case serverError(message: String)
+        case rawData(String) // Add this case
+        case noToken
+        case invalidTaskId
+        case invalidURL
+        
+        var localizedDescription: String {
+            switch self {
+            case .decodingError:
+                return "Failed to decode the server response."
+            case .invalidResponse:
+                return "Invalid response from the server."
+            case .noData:
+                return "No data received from the server."
+            case let .serverError(message):
+                return "Server error: \(message)"
+            case let .rawData(rawResponse):
+                return "Raw response: \(rawResponse)"
+            case .noToken:
+                return "No token found. Please log in."
+            case .invalidTaskId:
+                return "Invalid or missing task ID."
+            case .invalidURL:
+                return "Invalid URL. Please check the endpoint."
+            }
+        }
+    }
    
    
     func fetchMaintenancePredictions(for carId: String, completion: @escaping (Result<[MaintenanceTask], Error>) -> Void) {
         guard let token = TokenManager.shared.getToken(for: TokenManager.accessTokenKey) else {
-            completion(.failure(NSError(domain: "No access token", code: 401, userInfo: nil)))
+            completion(.failure(NetworkError.noData))
             return
         }
 
         guard let url = URL(string: "http://localhost:3000/maintenance/\(carId)/predict") else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+            completion(.failure(NetworkError.invalidResponse))
             return
         }
 
@@ -640,19 +714,169 @@ class NetworkService {
             }
 
             guard let data = data else {
-                completion(.failure(NSError(domain: "No data received", code: 404, userInfo: nil)))
+                completion(.failure(NetworkError.noData))
                 return
             }
 
             do {
-                let tasks = try JSONDecoder().decode([MaintenanceTask].self, from: data)
-                completion(.success(tasks))
+                let rawTasks = try JSONDecoder().decode([MaintenanceTask].self, from: data)
+                
+                // Fix tasks with missing `_id`
+                let updatedTasks = rawTasks.map { task in
+                    if task._id == nil || task._id?.isEmpty == true {
+                        print("Warning: Task has no valid _id. Assigning UUID.")
+                        return MaintenanceTask(
+                            _id: UUID().uuidString, // Assign UUID as a temporary fix
+                            carId: task.carId,
+                            task: task.task,
+                            dueDate: task.dueDate,
+                            nextMileage: task.nextMileage,
+                            status: task.status
+                        )
+                    }
+                    return task
+                }
+
+                completion(.success(updatedTasks.uniqued()))
             } catch {
-                print("Decoding Error:", error.localizedDescription)
-                print("Raw Response Data:", String(data: data, encoding: .utf8) ?? "Invalid Data")
+                print("Decoding Error: \(error)")
                 completion(.failure(error))
             }
         }.resume()
     }
     
+    // Complete a Task
+    func completeTask(taskId: String, completion: @escaping (Result<MaintenanceTask, Error>) -> Void) {
+        guard let url = URL(string: "http://localhost:3000/maintenance/task/\(taskId)/complete"),
+              let accessToken = TokenManager.shared.getToken(for: TokenManager.accessTokenKey) else {
+            completion(.failure(NSError(domain: "Invalid URL or Token", code: 400, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(NSError(domain: "Invalid Response", code: 500, userInfo: nil)))
+                return
+            }
+            
+            // Check for non-200 status code
+            if !(200...299).contains(httpResponse.statusCode) {
+                let serverError = String(data: data ?? Data(), encoding: .utf8) ?? "Unknown Server Error"
+                completion(.failure(NSError(domain: "Server Error", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: serverError])))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No Data Received", code: 404, userInfo: nil)))
+                return
+            }
+            
+            do {
+                let updatedTask = try JSONDecoder().decode(MaintenanceTask.self, from: data)
+                completion(.success(updatedTask))
+            } catch {
+                completion(.failure(NSError(domain: "Decoding Error", code: 500, userInfo: [NSLocalizedDescriptionKey: "Decoding failed"])))
+            }
+        }.resume()
+    }
+    
+    func addTask(for carId: String, taskData: [String: Any], completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let url = URL(string: "http://localhost:3000/maintenance/\(carId)/task") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+            return
+        }
+
+        guard let token = TokenManager.shared.getToken(for: TokenManager.accessTokenKey) else {
+            completion(.failure(NSError(domain: "Missing Token", code: 401, userInfo: nil)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        request.httpBody = try? JSONSerialization.data(withJSONObject: taskData)
+
+        URLSession.shared.dataTask(with: request) { _, response, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }.resume()
+    }
+    
+    
+    
+    func updateTaskMileage(task: MaintenanceTask, newMileage: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let token = TokenManager.shared.getToken(for: TokenManager.accessTokenKey) else {
+            completion(.failure(NetworkError.noToken))
+            return
+        }
+
+        guard let taskId = task._id, !taskId.isEmpty else {
+            print("Error: Task ID is nil or empty.")
+            completion(.failure(NetworkError.invalidTaskId))
+            return
+        }
+
+        guard let url = URL(string: "http://localhost:3000/maintenance/\(taskId)") else {
+            print("Error: Invalid URL.")
+            completion(.failure(NetworkError.invalidURL))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let requestBody: [String: Any] = [
+            "carId": task.carId,
+            "newMileage": newMileage,
+            "status": task.status
+        ]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+        } catch {
+            print("Error encoding request body:", error.localizedDescription)
+            completion(.failure(error))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Network error:", error.localizedDescription)
+                completion(.failure(error))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Error: Invalid response.")
+                completion(.failure(NetworkError.invalidResponse))
+                return
+            }
+
+            if (200...299).contains(httpResponse.statusCode) {
+                print("Task updated successfully.")
+                completion(.success(()))
+            } else {
+                let errorResponse = String(data: data ?? Data(), encoding: .utf8) ?? "Unknown error."
+                print("Error Response: \(errorResponse)")
+                completion(.failure(NetworkError.serverError(message: errorResponse)))
+            }
+        }.resume()
+    }
 }

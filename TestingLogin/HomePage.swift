@@ -1,17 +1,12 @@
 import SwiftUI
 
 
-
-
-import SwiftUI
-
 struct HomePage: View {
     @ObservedObject var carManager = CarManager.shared
 
     @State private var cars: [Car] = [] // List of fetched cars
     @State private var isLoading: Bool = true // Loading state
     @State private var errorMessage: String? // Error message
-    @State private var selectedTab: TabBarItems = .home // Selected tab
     @State private var navigateToPhotosView = false // State for PhotosView navigation
     @State private var navigateToProfileView = false // State for EditProfile navigation
     @State private var selectedCar: Car? // Holds the selected car for navigation
@@ -19,30 +14,72 @@ struct HomePage: View {
     @State private var navigateToUpdateView = false // State for CarUpdateView navigation
     @State private var selectedCarForMaintenance: Car? // Track selected car for MaintenanceView
       @State private var navigateToMaintenance = false // Trigger for MaintenanceView navigation
+  
 
 
-
+    
+    
+    
+    
     var body: some View {
-        NavigationView {
             VStack(spacing: 0) {
                 ZStack {
                     if carManager.cars.isEmpty {
-                        Text("No cars available. Add a car to get started!")
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    } else {
+                        VStack {
+                                // Header (placé en haut)
+                                HStack {
+                                    Image(systemName: "square.grid.2x2")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
+                                    
+                                    Spacer().frame(width: 250)
+                                    
+                                    NavigationLink(destination: PhotosView()) {
+                                        Image(systemName: "plus.circle")
+                                            .font(.system(size: 40))
+                                            .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
+                                    }
+                                    
+                                    NavigationLink(destination: ProfileView()) {
+                                        Image(systemName: "person.crop.circle")
+                                            .font(.system(size: 40))
+                                            .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
+                                    }
+                                }
+                                .padding(.horizontal)
+                                .padding(.top)
+                                
+                                Spacer() // Espace pour pousser le contenu vers le bas
+                                
+                                // Texte centré
+                                Text("No 🚘 available. Add a car to get started!")
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(.center)
+                                    .padding()
+                                
+                                Spacer() // Espace pour pousser le contenu vers le haut
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity) // S'assure que le VStack occupe tout l'écran
+                        .navigationBarBackButtonHidden(true)
+                        } else {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 20) {
                                 // Header
                                 HStack {
+                                    Image(systemName: "square.grid.2x2")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
+                                    
+                                    Spacer().frame(width: 250)
+                                    
+                                    
                                     NavigationLink(destination: PhotosView()) {
                                         Image(systemName: "plus.circle")
                                             .font(.system(size: 40))
                                             .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
                                     }
 
-                                    Spacer()
+                            
 
                                     NavigationLink(destination: ProfileView()) {
                                         Image(systemName: "person.crop.circle")
@@ -54,14 +91,12 @@ struct HomePage: View {
                                 .padding(.top)
 
                                 // Welcome Message
-                                VStack(alignment: .leading) {
-                                    Text("Hello 👋")
+                                HStack(alignment: .center) {
+                                    Spacer().frame(width: 100)
+                                    Text("🚘 Car's List 🚘")
                                         .font(.title)
+                                    
                                         .fontWeight(.bold)
-
-                                    Text("Let's discover your car here")
-                                        .foregroundColor(.gray)
-                                        .font(.subheadline)
                                 }
                                 .padding(.horizontal)
 
@@ -93,13 +128,6 @@ struct HomePage: View {
                     }
                 }
 
-                // Bottom Navigation Bar
-                BottomNavItem(selectedTab: .constant(.home))
-                    .frame(height: 70)
-                    .background(
-                        Color.white
-                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: -2)
-                    )
             }
             .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
             .navigationDestination(isPresented: $navigateToMaintenance) {
@@ -119,7 +147,6 @@ struct HomePage: View {
                             DispatchQueue.main.async {
                                 switch result {
                                 case .success(let responseCar):
-                                    // Update the local car list with the updated car
                                     if let index = carManager.cars.firstIndex(where: { $0.id == responseCar.id }) {
                                         carManager.cars[index] = responseCar
                                     }
@@ -133,7 +160,6 @@ struct HomePage: View {
                     })
                 }
             }
-        }
         .onAppear {
             fetchCars()
         }
@@ -158,10 +184,16 @@ struct HomePage: View {
 
 struct CarCardView: View {
     let car: Car
-
+    @Environment(\.colorScheme) var colorScheme
     var onFreeServiceTap: (() -> Void)? // Closure for Free Service Icon tap
     var onUpdateTap: (() -> Void)? // Closure for Update Icon tap
-
+    
+    var dynamicBackgroundColor: Color {
+            colorScheme == .dark
+        ? Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
+                : Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255, opacity: 0.2) // Couleur pour Light Mode
+        }
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             NavigationLink(destination: CarDetailView(car: car)) {
@@ -177,6 +209,7 @@ struct CarCardView: View {
                                 .frame(width: 340, height: 180)
                                 .clipped()
                                 .cornerRadius(15)
+                                .padding(.top, 10)
                         } else if phase.error != nil {
                             Image(systemName: "car.fill")
                                 .resizable()
@@ -199,18 +232,20 @@ struct CarCardView: View {
                 }
                 
                 // Car details
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 16) {
                     Text(car.carModel) // Car model
                         .font(.headline)
+                        .foregroundColor(.gray)
                     Text("\(car.year) - \(car.make)") // Year and make
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 8)
+                .padding(.leading, -5)
             }
-            .frame(width: 340) // Fixed width for the entire card
-            .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255).opacity(0.2)) // Background color for the card
+            .frame(width: 380) // Fixed width for the entire card
+            .background(dynamicBackgroundColor) // Background color for the card
             .cornerRadius(15)
             .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
         }
@@ -224,25 +259,28 @@ struct CarCardView: View {
                         .scaledToFit()
                         .frame(width: 25, height: 25)
                         .padding(8)
+                        .foregroundColor(.black)
                         .clipShape(Circle())
-                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                        
                 }
 
                 Button(action: {
                     onUpdateTap?()
                 }) {
-                    Image(systemName: "square.and.pencil") // Update Icon
+                    Image(systemName: "pencil.and.list.clipboard") // Update Icon
                         .resizable()
                         .scaledToFit()
+                        .foregroundColor(.black)
                         .frame(width: 25, height: 25)
                         .padding(8)
                         .clipShape(Circle())
-                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    
                 }
             }
             .padding(8)
         }
         .padding(.horizontal)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
@@ -281,49 +319,4 @@ struct MockData {
     ]
 }
 
-enum TabBarItems: String, CaseIterable {
-    case home
-    case new
-    case pluslogo
-    case inbox
-    case profile
-    
-    var title: String {
-        if self != .pluslogo {
-            return self.rawValue.capitalized
-        } else {
-            return ""
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .home:
-            return "house"
-        case .new:
-            return "person.2"
-        case .pluslogo:
-            return "plus.circle"
-        case .inbox:
-            return "arrow.down.message"
-        case .profile:
-            return "person"
-        }
-    }
-    
-    var selectedIcon: String{
-        switch self {
-        case .home:
-            return "house.fill"
-        case .new:
-            return "person.2.fill"
-        case .pluslogo:
-            return "plus.circle"
-        case .inbox:
-            return "arrow.down.message.fill"
-        case .profile:
-            return "person.fill"
-        }
-    }
-}
 

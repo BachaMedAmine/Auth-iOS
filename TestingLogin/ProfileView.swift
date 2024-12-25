@@ -13,9 +13,11 @@ struct ProfileView: View {
     @State private var showChangePasswordView: Bool = false
     @State private var navigateToLogin = false
     @State private var showAlert = false
+    @Environment(\.presentationMode) var presentationMode
+    @State private var currentUserName: String? = nil
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // Background color that adapts to light and dark mode
                 (colorScheme == .dark ? Color.black : Color(UIColor.systemBackground))
@@ -23,15 +25,11 @@ struct ProfileView: View {
                 
                 VStack {
                     VStack {
-                        Text("My Profile")
-                            .font(.headline)
-                            .padding(.top)
                         
-                        Spacer().frame(height: 90)
                         
-                        Text("Profile View")
-                            .font(.title2)
-                            .bold()
+                        Spacer().frame(height: 110)
+                        
+                       
                         
                         Spacer().frame(height: 60)
                         
@@ -43,7 +41,7 @@ struct ProfileView: View {
                                 .font(.headline)
                                 .foregroundColor(.primary)
                                 .padding()
-                                .frame(width: 300)
+                                .frame(width: 320)
                                 .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
                                 .cornerRadius(10)
                                 .padding(.horizontal)
@@ -57,12 +55,86 @@ struct ProfileView: View {
                                 .font(.headline)
                                 .foregroundColor(.primary)
                                 .padding()
-                                .frame(width: 300)
+                                .frame(width: 320)
                                 .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
                                 .cornerRadius(10)
                                 .padding(.horizontal)
                                 .padding(.top, 8)
                         }
+                        
+                        HStack {
+                            Image(systemName: "newspaper")
+                            .foregroundColor(.gray)
+                            Text("Terms & Conditions")
+                                .foregroundColor(Color.gray)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                                        .foregroundColor(.gray)
+                            }
+                        .frame(width: 290)
+                                                .padding()
+                                                .background(Color.white)
+                                                .cornerRadius(12)
+                                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
+                                                .onTapGesture {
+                                                    if let url = URL(string: "https://www.freeprivacypolicy.com/live/e9a63b42-a84d-4785-8499-aeab786caff9") {
+                                                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                                    }
+                                                }
+
+                        
+                        HStack {
+                            Image(systemName: "newspaper.circle")
+                            .foregroundColor(.gray)
+                            Text("Privacy Policy")
+                                .foregroundColor(Color.gray)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                                        .foregroundColor(.gray)
+                            }
+                        .frame(width: 290)
+                                                .padding()
+                                                .background(Color.white)
+                                                .cornerRadius(12)
+                                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
+                                                .onTapGesture {
+                                                    if let url = URL(string: "https://www.freeprivacypolicy.com/live/8bc8380f-53ec-4d70-bce5-822379a64c86") {
+                                                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                                                    }
+                                                }
+                        NavigationLink(destination: SettingsView()) {
+                            HStack {
+                                Image(systemName: "gearshape")
+                                    .foregroundColor(.gray)
+                                Text("Settings")
+                                    .foregroundColor(Color.gray)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                            }
+                            .frame(width: 290)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(12)
+                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)}
+                        
+                        
+                        HStack {
+                            Image(systemName: "exclamationmark.bubble")
+                            .foregroundColor(.gray)
+                            Text("Help & Support")
+                                .foregroundColor(Color.gray)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                                        .foregroundColor(.gray)
+                            }
+                        .frame(width: 290)
+                                                .padding()
+                                                .background(Color.white)
+                                                .cornerRadius(12)
+                                                .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
+                        
+                        
                         
                         Button(action: {
                             showAlert = true // Affiche l'alerte
@@ -71,7 +143,7 @@ struct ProfileView: View {
                                 .font(.headline)
                                 .foregroundColor(.primary)
                                 .padding()
-                                .frame(width: 300)
+                                .frame(width: 320)
                                 .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
                                 .cornerRadius(10)
                                 .padding(.horizontal)
@@ -96,6 +168,29 @@ struct ProfileView: View {
                         }
                         
                     }
+                    
+                    .toolbar {
+                                        ToolbarItem(placement: .navigationBarLeading) {
+                                            Button(action: {
+                                                presentationMode.wrappedValue.dismiss()
+                                            }) {
+                                                HStack {
+                                                    Image(systemName: "chevron.left")
+                                                        .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))// Change la couleur ici
+                                                    Text("Back")
+                                                        .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255)) // Change la couleur ici
+                                                    
+                                                    Spacer().frame(width: 90)
+                                                    Text("My Profile")
+                                                        .font(.headline)
+                                                        
+                                                        .foregroundColor(.primary)
+                                                }
+                                                
+                                            }
+                                        }
+                                    }
+                                .navigationBarBackButtonHidden(true)
                     .padding(.bottom, 20)
                     .sheet(isPresented: $showEditProfileView) {
                         EditProfile()
@@ -110,19 +205,7 @@ struct ProfileView: View {
                     
                     Spacer().frame(height: 60)
                     
-                    Divider().padding(.vertical)
-                    
-                    // Options Section
-                    /*VStack(spacing: 16) {
-                     OptionRow(title: "My Profile", iconName: "person.fill")
-                     OptionRow(title: "My Bookings", iconName: "calendar")
-                     OptionRow(title: "Settings", iconName: "gearshape.fill")
-                     }
-                     .padding(.horizontal)*/
-                    
-                    
-                    
-                    // Bottom Navigation Bar
+
                 }
                 
             }

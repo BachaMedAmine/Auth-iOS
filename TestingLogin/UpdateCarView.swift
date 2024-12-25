@@ -18,15 +18,14 @@ struct UpdateCarView: View {
     @State private var selectedImage: UIImage? // State for the new image
     @State private var showPhotoPicker = false
     @State private var showCamera = false
+    @Environment(\.presentationMode) var presentationMode
     
 
     var onUpdate: (Car, UIImage?) -> Void // Callback with updated car details and optional image
 
     var body: some View {
         VStack {
-            Text("Update Car Details")
-                .font(.headline)
-                .padding()
+            
 
             // Input fields for car details
             Form {
@@ -73,7 +72,7 @@ struct UpdateCarView: View {
                             showPhotoPicker = true
                         }
                         .padding()
-                        .background(Color.blue)
+                        .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
                         .foregroundColor(.white)
                         .cornerRadius(10)
 
@@ -81,7 +80,7 @@ struct UpdateCarView: View {
                             showCamera = true
                         }
                         .padding()
-                        .background(Color.green)
+                        .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     }
@@ -108,12 +107,33 @@ struct UpdateCarView: View {
                 Text("Update Car")
                     .bold()
                     .frame(maxWidth: .infinity, minHeight: 50)
-                    .background(Color.orange)
+                    .background(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
             .padding()
         }
+        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button(action: {
+                                    presentationMode.wrappedValue.dismiss()
+                                }) {
+                                    HStack {
+                                        Image(systemName: "chevron.left")
+                                            .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255))// Change la couleur ici
+                                        Text("Back")
+                                            .foregroundColor(Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255)) // Change la couleur ici
+                                        
+                                        Spacer().frame(width:50)
+                                        Text("Update Car Details")
+                                            .font(.headline)
+                                      
+                                            .foregroundColor(.primary)
+                                    }
+                                }
+                            }
+                        }
+                    .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showPhotoPicker) {
             PhotosPickerView(selectedItem: .constant(nil), imageFromPicker: $selectedImage)
         }

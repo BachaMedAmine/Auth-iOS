@@ -20,6 +20,12 @@
         }
       }
     },
+    "%lld km" : {
+
+    },
+    "🚘 Car's List 🚘" : {
+
+    },
     "A 6-digit code has been sent to your Email ID." : {
       "localizations" : {
         "fr" : {
@@ -29,6 +35,15 @@
           }
         }
       }
+    },
+    "About" : {
+
+    },
+    "Account Management" : {
+
+    },
+    "Add New Task" : {
+
     },
     "Already have an account? " : {
       "localizations" : {
@@ -51,16 +66,52 @@
         }
       }
     },
+    "App Information" : {
+
+    },
+    "Appearance Mode" : {
+
+    },
     "Apple" : {
 
     },
     "Are you sure you want to log out?" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Êtes-vous sûr de vouloir vous déconnecter ?"
+          }
+        }
+      }
+    },
+    "Back" : {
+
+    },
+    "Cancel" : {
 
     },
     "Car Details" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails de la voiture"
+          }
+        }
+      }
     },
     "Car Image" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image de la voiture"
+          }
+        }
+      }
+    },
+    "Change Language" : {
 
     },
     "Change Password" : {
@@ -72,6 +123,15 @@
           }
         }
       }
+    },
+    "Change Region" : {
+
+    },
+    "Complete" : {
+
+    },
+    "Completed" : {
+
     },
     "Confirm Password" : {
       "extractionState" : "manual",
@@ -85,6 +145,28 @@
       }
     },
     "Confirmation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmation"
+          }
+        }
+      }
+    },
+    "Contact Support" : {
+
+    },
+    "Customize Notifications" : {
+
+    },
+    "Dark" : {
+
+    },
+    "Delete My Account" : {
+
+    },
+    "Delete My Data" : {
 
     },
     "Didn't have an account? " : {
@@ -96,6 +178,12 @@
           }
         }
       }
+    },
+    "Due Date" : {
+
+    },
+    "Due: %@" : {
+
     },
     "Edit Profile" : {
       "localizations" : {
@@ -118,7 +206,23 @@
         }
       }
     },
+    "Enable Notifications" : {
+
+    },
     "Engine" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moteur"
+          }
+        }
+      }
+    },
+    "English" : {
+
+    },
+    "Enter New Mileage" : {
 
     },
     "Enter OTP" : {
@@ -152,6 +256,12 @@
         }
       }
     },
+    "FAQ" : {
+
+    },
+    "Font Size" : {
+
+    },
     "Forgot Password?" : {
       "localizations" : {
         "fr" : {
@@ -161,6 +271,9 @@
           }
         }
       }
+    },
+    "Français" : {
+
     },
     "Full Name" : {
       "extractionState" : "manual",
@@ -184,6 +297,7 @@
       }
     },
     "Hello 👋" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -214,8 +328,18 @@
         }
       }
     },
-    "History" : {
+    "Help & Support" : {
 
+    },
+    "History" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Histoire"
+          }
+        }
+      }
     },
     "I accept " : {
       "localizations" : {
@@ -238,13 +362,14 @@
         }
       }
     },
-    "Last: %@" : {
+    "Language" : {
 
     },
-    "Last: Unknown" : {
+    "Legal Notices" : {
 
     },
     "Let's discover your car here" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -253,6 +378,9 @@
           }
         }
       }
+    },
+    "Light" : {
+
     },
     "Loading..." : {
 
@@ -287,17 +415,47 @@
         }
       }
     },
+    "Maintenance" : {
+
+    },
     "Make" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marque"
+          }
+        }
+      }
+    },
+    "Manage Devices" : {
+
+    },
+    "Manage Permissions" : {
 
     },
     "Mileage" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kilometrage"
+          }
+        }
+      }
     },
     "Mileage: %lld km" : {
 
     },
     "Model" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modele"
+          }
+        }
+      }
     },
     "My Profile" : {
       "localizations" : {
@@ -320,15 +478,36 @@
       }
     },
     "New Password" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau Mot De Passe"
+          }
+        }
+      }
+    },
+    "Next Mileage (Optional)" : {
 
     },
-    "Next: %@ km" : {
+    "Next: %lld km" : {
 
     },
-    "Next: Unknown" : {
+    "No 🚘 available. Add a car to get started!" : {
 
     },
     "No cars available. Add a car to get started!" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune voiture disponible. Ajoutez une voiture pour commencer !"
+          }
+        }
+      }
+    },
+    "No Due Information" : {
 
     },
     "No Image Selected" : {
@@ -341,6 +520,15 @@
           }
         }
       }
+    },
+    "No maintenance tasks are currently due." : {
+
+    },
+    "Notification Settings" : {
+
+    },
+    "Notifications" : {
+
     },
     "OK" : {
 
@@ -400,10 +588,24 @@
         }
       }
     },
-    "Processing, please wait..." : {
+    "Privacy" : {
 
     },
+    "Privacy Policy" : {
+
+    },
+    "Processing, please wait..." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traitement en cours, veuillez patienter..."
+          }
+        }
+      }
+    },
     "Profile View" : {
+      "extractionState" : "stale",
       "localizations" : {
         "fr" : {
           "stringUnit" : {
@@ -434,6 +636,12 @@
         }
       }
     },
+    "Save" : {
+
+    },
+    "Security" : {
+
+    },
     "Select an image" : {
       "localizations" : {
         "fr" : {
@@ -453,6 +661,12 @@
           }
         }
       }
+    },
+    "Select Language" : {
+
+    },
+    "Send Feedback" : {
+
     },
     "Send Link" : {
       "localizations" : {
@@ -475,6 +689,16 @@
       }
     },
     "Service Details" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails des services"
+          }
+        }
+      }
+    },
+    "Settings" : {
 
     },
     "Sign up to get started using email or social" : {
@@ -508,6 +732,9 @@
         }
       }
     },
+    "Skip" : {
+
+    },
     "Slide Up to Open camera and capture your car" : {
       "localizations" : {
         "fr" : {
@@ -519,6 +746,16 @@
       }
     },
     "Submit" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soumettre"
+          }
+        }
+      }
+    },
+    "Support" : {
 
     },
     "Swipe up" : {
@@ -532,6 +769,22 @@
       }
     },
     "Take a Photo" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prendre une photo"
+          }
+        }
+      }
+    },
+    "Task Details" : {
+
+    },
+    "Task Name" : {
+
+    },
+    "Terms & Conditions" : {
 
     },
     "terms and conditions" : {
@@ -554,13 +807,49 @@
         }
       }
     },
-    "Update Car" : {
+    "Two-Factor Authentication" : {
 
     },
+    "Update" : {
+
+    },
+    "Update Car" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre à jour la voiture"
+          }
+        }
+      }
+    },
     "Update Car Details" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre à jour les détails de la voiture"
+          }
+        }
+      }
+    },
+    "Update Email" : {
+
+    },
+    "Update Mileage" : {
 
     },
     "Update Status" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statut de la mise à jour"
+          }
+        }
+      }
+    },
+    "Update Task" : {
 
     },
     "Verify" : {
@@ -604,7 +893,14 @@
       }
     },
     "Welcome to the main content!" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bienvenue dans le contenu principal !"
+          }
+        }
+      }
     },
     "welcome_back" : {
       "comment" : "Welcome Back 👋",
@@ -619,6 +915,16 @@
       }
     },
     "Year" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Année"
+          }
+        }
+      }
+    },
+    "Year: %lld" : {
 
     }
   },

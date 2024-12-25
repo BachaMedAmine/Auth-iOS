@@ -17,7 +17,10 @@ enum ActiveSheet: Identifiable {
 }
 
 
-
+enum Field: Hashable {
+        case emailAddress
+        case password
+    }
 struct LoginScreen: View {
     @State private var emailAddress: String = ""
     @State private var password: String = ""
@@ -35,6 +38,7 @@ struct LoginScreen: View {
     @State private var email: String = ""
     @Environment(\.presentationMode) var presentationMode
     
+    @FocusState private var focusedField: Field?
     var onLoginSuccess: () -> Void
 
     func logNavigation(from currentPage: String, to targetPage: String) {
@@ -48,6 +52,10 @@ struct LoginScreen: View {
                 {
                     Color(.systemBackground)
                         .edgesIgnoringSafeArea(.all)
+                        .onTapGesture {
+                                            focusedField = nil // Désélectionne tous les champs de texte
+                                        }
+                        .allowsHitTesting(true)
                     
                     VStack(alignment: .center) {
                         Image("car")
@@ -92,7 +100,16 @@ struct LoginScreen: View {
                                 CustomTF(sfIcon: "at", hint: "Email Address", value: $emailAddress)
                                     .autocapitalization(.none)
                                     .disableAutocorrection(true)
+                                    .focused($focusedField, equals: .emailAddress)
+                                    .onTapGesture {
+                                                        focusedField = nil // Désélectionne tous les champs
+                                                    }
                                 CustomTF(sfIcon: "lock", hint: "Password", isPassword: true, value: $password)
+                                    .focused($focusedField, equals: .password)
+                                    .onTapGesture {
+                                                        focusedField = nil // Désélectionne tous les champs
+                                                    }
+                                
                                 
                                 HStack {
                                     Spacer()
@@ -178,6 +195,7 @@ struct LoginScreen: View {
                                 }
                                 
                                 Spacer()
+                                    
                                 
                                 HStack {
                                     Text("Didn't have an account? ")
@@ -194,6 +212,7 @@ struct LoginScreen: View {
                                     }
                                 }
                                 .padding(.top, 20)
+                                
                                 .navigationDestination(isPresented: $showSignup) {
                                     SignupScreen()
                                 }
@@ -234,7 +253,9 @@ struct LoginScreen: View {
                             }
                     .presentationDetents([.height(350)])
                     .presentationCornerRadius(20)
+            
             }
+       
         }
     }
     
@@ -272,46 +293,50 @@ struct LoginScreen: View {
             print("Google Client ID not found.")
             return
         }
-        
+
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
-        
+
         guard let presentingVC = getRootViewController() else {
             print("Unable to find root view controller.")
             return
         }
-        
+
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC) { signInResult, error in
             if let error = error {
                 print("Google Login Error: \(error.localizedDescription)")
                 return
             }
-            
+
             guard let user = signInResult?.user,
                   let idToken = user.idToken?.tokenString else {
                 print("Unable to retrieve Google ID token.")
                 return
             }
-            
+
             // Perform Google Login
             NetworkService.shared.googleLogin(idToken: idToken) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let decodedResponse):
                         print("Google Login Success: \(decodedResponse)")
-                        
+
                         // Save tokens
                         TokenManager.shared.saveToken(decodedResponse.accessToken, for: TokenManager.accessTokenKey)
                         TokenManager.shared.saveToken(decodedResponse.refreshToken, for: TokenManager.refreshTokenKey)
-                        
+
                         // Check navigation conditions
                         if decodedResponse.user.cars.isEmpty {
+                            logNavigation(from: "LoginScreen", to: "WelcomeView")
                             shouldNavigateToWelcome = true
                         } else {
+                            logNavigation(from: "LoginScreen", to: "HomePage")
                             shouldNavigateToHome = true
                         }
                     case .failure(let error):
                         print("Google Login Failed: \(error.localizedDescription)")
+                        errorMessage = "Google Login failed: \(error.localizedDescription)"
+                        showError = true
                     }
                 }
             }
