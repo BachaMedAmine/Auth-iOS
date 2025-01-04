@@ -178,6 +178,7 @@ struct MaintenanceView: View {
             DispatchQueue.main.async {
                 switch result {
                 case .success:
+                    fetchMaintenanceTasks()
                     // Update the task in the `tasks` array
                     if let index = tasks.firstIndex(where: { $0._id == task._id }) {
                         tasks[index].nextMileage = newMileage + 10000 // Example logic

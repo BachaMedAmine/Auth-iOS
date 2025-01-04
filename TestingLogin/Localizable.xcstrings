@@ -133,6 +133,12 @@
     "Completed" : {
 
     },
+    "Completed on: %@" : {
+
+    },
+    "Completion date unavailable" : {
+
+    },
     "Confirm Password" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -418,6 +424,9 @@
     "Maintenance" : {
 
     },
+    "Maintenance Log" : {
+
+    },
     "Make" : {
       "localizations" : {
         "fr" : {
@@ -506,6 +515,9 @@
           }
         }
       }
+    },
+    "No completed tasks found." : {
+
     },
     "No Due Information" : {
 

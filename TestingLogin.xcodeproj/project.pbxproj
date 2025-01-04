@@ -15,6 +15,7 @@
 		6C63C2A62CE2A53F00FC1543 /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C63C2A52CE2A53F00FC1543 /* TokenManager.swift */; };
 		6C6AA6E32CF93E5A008C6889 /* MaintenanceTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6AA6E22CF93E5A008C6889 /* MaintenanceTask.swift */; };
 		6C6AA6E52CF93EFC008C6889 /* MaintenanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6AA6E42CF93EFC008C6889 /* MaintenanceView.swift */; };
+		6C6BE3002D29EE6500E9054C /* MaintenanceViewLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C6BE2FF2D29EE6500E9054C /* MaintenanceViewLog.swift */; };
 		6C84DD6F2CF782ED0068A9CD /* CarDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C84DD6E2CF782ED0068A9CD /* CarDetailView.swift */; };
 		6C84DD712CF78B190068A9CD /* UpdateCarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C84DD702CF78B190068A9CD /* UpdateCarView.swift */; };
 		6C8C1B322CF8A847006B7046 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8C1B312CF8A847006B7046 /* ContentView.swift */; };
@@ -78,6 +79,7 @@
 		6C63C2A52CE2A53F00FC1543 /* TokenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManager.swift; sourceTree = "<group>"; };
 		6C6AA6E22CF93E5A008C6889 /* MaintenanceTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceTask.swift; sourceTree = "<group>"; };
 		6C6AA6E42CF93EFC008C6889 /* MaintenanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceView.swift; sourceTree = "<group>"; };
+		6C6BE2FF2D29EE6500E9054C /* MaintenanceViewLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceViewLog.swift; sourceTree = "<group>"; };
 		6C84DD6E2CF782ED0068A9CD /* CarDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarDetailView.swift; sourceTree = "<group>"; };
 		6C84DD702CF78B190068A9CD /* UpdateCarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateCarView.swift; sourceTree = "<group>"; };
 		6C8C1B312CF8A847006B7046 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 				F4B64C6E2CE0B59E00DF698D /* PhotosView.swift */,
 				6C8C1B312CF8A847006B7046 /* ContentView.swift */,
 				F45916E02CE540B80012E7BC /* HomePage.swift */,
+				6C6BE2FF2D29EE6500E9054C /* MaintenanceViewLog.swift */,
 				6C6AA6E42CF93EFC008C6889 /* MaintenanceView.swift */,
 				6C942CCA2D0A3DAB0081C8E1 /* ArrayExtensions.swift */,
 				6C84DD6E2CF782ED0068A9CD /* CarDetailView.swift */,
@@ -405,6 +408,7 @@
 				F4F600132CBC79D30085DCA7 /* LoginScreen.swift in Sources */,
 				F49383E82CDA86C90048A57C /* EditProfile.swift in Sources */,
 				F4B64C6D2CE0B45D00DF698D /* WelcomeView.swift in Sources */,
+				6C6BE3002D29EE6500E9054C /* MaintenanceViewLog.swift in Sources */,
 				F49383E62CDA86B20048A57C /* ProfileView.swift in Sources */,
 				6C5A49EF2CF0352200731929 /* APIResponse.swift in Sources */,
 				F49383EA2CDA8C950048A57C /* ChangePassword.swift in Sources */,

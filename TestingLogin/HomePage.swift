@@ -13,8 +13,8 @@ struct HomePage: View {
     @State private var navigateToDetailView = false // State for CarDetailView navigation
     @State private var navigateToUpdateView = false // State for CarUpdateView navigation
     @State private var selectedCarForMaintenance: Car? // Track selected car for MaintenanceView
-      @State private var navigateToMaintenance = false // Trigger for MaintenanceView navigation
-  
+    @State private var navigateToMaintenance = false // Trigger for MaintenanceView navigation
+    @State private var navigateToLogView = false
 
 
     
@@ -112,6 +112,10 @@ struct HomePage: View {
                                             onUpdateTap: {
                                                 self.selectedCar = car
                                                 self.navigateToUpdateView = true
+                                            },
+                                            onViewLogTap: {
+                                                self.selectedCar = car
+                                                self.navigateToLogView = true
                                             }
                                         )
                                         .onTapGesture {
@@ -138,6 +142,11 @@ struct HomePage: View {
             .navigationDestination(isPresented: $navigateToDetailView) {
                 if let car = selectedCar {
                     CarDetailView(car: car)
+                }
+            }
+            .navigationDestination(isPresented: $navigateToLogView) {
+                if let car = selectedCar {
+                    MaintenanceViewLog(car: car)
                 }
             }
             .navigationDestination(isPresented: $navigateToUpdateView) {
@@ -187,94 +196,106 @@ struct CarCardView: View {
     @Environment(\.colorScheme) var colorScheme
     var onFreeServiceTap: (() -> Void)? // Closure for Free Service Icon tap
     var onUpdateTap: (() -> Void)? // Closure for Update Icon tap
-    
+    var onViewLogTap: (() -> Void)? // Closure for Maintenance Log Icon tap
+
     var dynamicBackgroundColor: Color {
-            colorScheme == .dark
-        ? Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
-                : Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255, opacity: 0.2) // Couleur pour Light Mode
-        }
-    
+        colorScheme == .dark
+            ? Color(red: 242 / 255, green: 242 / 255, blue: 242 / 255)
+            : Color(red: 180 / 255, green: 196 / 255, blue: 36 / 255, opacity: 0.2)
+    }
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             NavigationLink(destination: CarDetailView(car: car)) {
-            VStack(alignment: .leading) {
-                // Display car image from imageUrl or show a placeholder
-                if let imageUrl = car.imageUrl?.replacingOccurrences(of: "localhost", with: "127.0.0.1"),
-                   let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 340, height: 180)
-                                .clipped()
-                                .cornerRadius(15)
-                                .padding(.top, 10)
-                        } else if phase.error != nil {
-                            Image(systemName: "car.fill")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 340, height: 180)
-                                .cornerRadius(15)
-                                .foregroundColor(.gray)
-                        } else {
-                            ProgressView() // Show a loader while the image loads
-                                .frame(width: 340, height: 180)
+                VStack(alignment: .leading) {
+                    // Display car image or placeholder
+                    if let imageUrl = car.imageUrl?.replacingOccurrences(of: "localhost", with: "127.0.0.1"),
+                       let url = URL(string: imageUrl) {
+                        AsyncImage(url: url) { phase in
+                            if let image = phase.image {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 340, height: 180)
+                                    .clipped()
+                                    .cornerRadius(15)
+                                    .padding(.top, 10)
+                            } else if phase.error != nil {
+                                Image(systemName: "car.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 340, height: 180)
+                                    .cornerRadius(15)
+                                    .foregroundColor(.gray)
+                            } else {
+                                ProgressView()
+                                    .frame(width: 340, height: 180)
+                            }
                         }
+                    } else {
+                        Image(systemName: "car.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 340, height: 180)
+                            .cornerRadius(15)
+                            .foregroundColor(.gray)
                     }
-                } else {
-                    Image(systemName: "car.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 340, height: 180)
-                        .cornerRadius(15)
-                        .foregroundColor(.gray)
+
+                    // Car details
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(car.carModel)
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                        Text("\(car.year) - \(car.make)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    .padding(.leading, -5)
                 }
-                
-                // Car details
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(car.carModel) // Car model
-                        .font(.headline)
-                        .foregroundColor(.gray)
-                    Text("\(car.year) - \(car.make)") // Year and make
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-                .padding(.horizontal)
-                .padding(.bottom, 8)
-                .padding(.leading, -5)
+                .frame(width: 380)
+                .background(dynamicBackgroundColor)
+                .cornerRadius(15)
+                .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
             }
-            .frame(width: 380) // Fixed width for the entire card
-            .background(dynamicBackgroundColor) // Background color for the card
-            .cornerRadius(15)
-            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-        }
-            // Icons in the bottom-right corner
+
+            // Action buttons
             HStack(spacing: 16) {
                 Button(action: {
                     onFreeServiceTap?()
                 }) {
-                    Image(systemName: "wrench.and.screwdriver") // Free Service Icon
+                    Image(systemName: "wrench.and.screwdriver")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 25, height: 25)
                         .padding(8)
                         .foregroundColor(.black)
                         .clipShape(Circle())
-                        
                 }
 
                 Button(action: {
                     onUpdateTap?()
                 }) {
-                    Image(systemName: "pencil.and.list.clipboard") // Update Icon
+                    Image(systemName: "pencil.and.list.clipboard")
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(.black)
                         .frame(width: 25, height: 25)
                         .padding(8)
                         .clipShape(Circle())
-                    
+                }
+
+                Button(action: {
+                    onViewLogTap?()
+                }) {
+                    Image(systemName: "doc.text")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.black)
+                        .frame(width: 25, height: 25)
+                        .padding(8)
+                        .clipShape(Circle())
                 }
             }
             .padding(8)

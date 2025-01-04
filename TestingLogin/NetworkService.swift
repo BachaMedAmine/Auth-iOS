@@ -879,4 +879,30 @@ class NetworkService {
             }
         }.resume()
     }
+    
+    func fetchCompletedTasks(for carId: String, completion: @escaping (Result<[MaintenanceTask], Error>) -> Void) {
+        guard let url = URL(string: "http://127.0.0.1:3000/maintenance/\(carId)?status=Completed") else {
+            completion(.failure(NetworkError.invalidURL))
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(NetworkError.noData))
+                return
+            }
+
+            do {
+                let tasks = try JSONDecoder().decode([MaintenanceTask].self, from: data)
+                completion(.success(tasks))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
 }
